@@ -1,0 +1,369 @@
+
+html,
+body,
+.App,
+#root {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+}
+
+:root {
+  --background: #417cef;
+  --LoginFormOutline: #417cef;
+}
+
+/* ------------------------------Nav------------------------------ */
+
+
+.nav-toggle-label span::before, .nav-toggle-label span::after {
+  box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	background: rgb(255, 248, 248);
+	font-family: 'Work Sans', sans-serif;
+	font-weight: 400;
+}
+
+.container {
+  height: 10;
+  background-blend-mode: multiply;
+  background-size: cover;
+  display: grid;
+  place-items: left;
+  padding: 10px;
+  padding-top: 65px;
+}
+.nav-header {
+  background: var(--background);
+  text-align: center;
+  position: fixed;
+  z-index: 999;
+  width: 100%;
+}
+
+.nav-toggle {
+  display: none;
+}
+
+.nav-toggle-label {
+  position: absolute;
+  top:0;
+  left: 0;
+  margin-left: 1em;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.nav-toggle-label span,
+.nav-toggle-label span::before,
+.nav-toggle-label span::after {
+  display: block;
+  background: white;
+  height: 2px;
+  width: 2em;
+  border-radius: 2px;
+  position: relative;
+}
+
+.nav-toggle-label span::before,
+.nav-toggle-label span::after {
+  content: '';
+  position: absolute;
+}
+
+.nav-toggle-label span::before {
+  bottom: 7px;
+}
+
+.nav-toggle-label span::after {
+  top: 7px;
+}
+
+nav {
+  position: absolute;
+  text-align: left;
+  top: 100%;
+  left: 0;
+  background: var(--background);
+  width: 100%;
+  transform: scale(1, 0);
+  transform-origin: top;
+  transition: transform 400ms ease-in-out
+}
+
+nav ul {
+
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+nav li {
+  margin-bottom: 1em;
+  margin-left: 1em;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 150ms ease-in-out;
+}
+
+nav a:hover {
+  color: #000;
+}
+
+.nav-toggle:checked ~ nav {
+  transform: scale(1,1)
+  
+}
+
+.nav-toggle:checked ~ nav a  {
+  opacity: 1;
+  transition: opacity 250ms ease-in-out 250ms;
+}
+
+@media screen and (min-width: 769px){
+  .nav-toggle-label {
+    display: none;
+  }
+
+  header {
+    display: grid;
+    grid-template-columns: 1fr auto minmax(600px, 5fr) 1fr;
+  }
+
+  .logo {
+    grid-column: 2 / span 1;
+  }
+
+  nav {
+    all: unset;
+    grid-column: 3/4;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center
+  }
+
+  nav ul {
+    display: flex;
+  }
+
+  nav a {
+    opacity: 1;
+    position: relative;
+  }
+
+  nav a::before {
+    content: '';
+    display: block;
+    height: 5px;
+    background: #000;
+    position: absolute;
+    top: -.75em;
+    left: 0;
+    right: 0;
+    transform: scale(0,1);
+    transition: transform ease-in-out 250ms;
+  }
+
+  nav a:hover::before {
+    transform: scale(1,1)
+  }
+
+  nav li {
+    margin-left: 3em;
+    margin-bottom: 0;
+  }
+} 
+/* ------------------------------Nav End------------------------------ */
+/* -----------------------------Login Page---------------------------- */
+
+.Container {
+  padding-top: 79.875px;
+  width: 100%;
+  height: 100%;
+}
+
+.root-container {
+  min-width: 300px;
+  min-height: 600px;
+  overflow: hidden;
+  overflow:scroll;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.box-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 24em;
+  min-width: 21em;
+  box-shadow: 0px 0px 20px 0px rgba(15, 15, 15, 0.2);
+  border-radius: 6px;
+  padding: 24px;
+}
+
+.box-controller {
+  visibility: visible;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  max-width: 50em;
+  min-width: 21em;
+  height: 35px;
+  -webkit-box-shadow: 0px 0px 20px 0px rgba(15, 15, 15, 0.2);
+  box-shadow: 0px 0px 20px 0px rgba(15, 15, 15, 0.2);
+  margin-bottom: 30px;
+  align-items: center;
+  transition: visibility 0.5s ease-out;
+}
+
+.controller {
+  flex: 1;
+  text-align: center;
+  height: 100%;
+  line-height: 2;
+  cursor: pointer;
+}
+
+.inner-container {
+  transition: visibility 0.2s ease-out;
+}
+
+.inner-container.show {
+  visibility: visible;
+}
+
+.header {
+  text-align: center;
+  padding: 5px;
+  margin-bottom: 17px;
+  /* margin-left: 35px; 
+  margin-right: 35px; */
+  font-family: Ozxgen, sans-serif;
+  font-size: 22px;
+  border-bottom: 2px solid var(--LoginFormOutline);
+}
+
+.box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.login-label {
+  font-family: Oxygen, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  padding-left: 5px;
+}
+
+/* Input */
+.login-input {
+  height: 2.1em;
+  border-radius: 3px;
+  border: 1px solid var(--LoginFormOutline);
+  transition: border 0.4s ease-out;
+  padding: 13px;
+  font-family: Oxygen, sans-serif;
+  font-size: 19px;
+  color: #3e3e42;
+  background: rgba(15, 15, 15, 0.01);
+}
+.login-btn {
+  padding: 2px 30px;
+  border: 0;
+  font-size: 18px;
+  border-radius: 3px;
+  font-family: Oxygen, sans-serif;
+  background-color: rgba(15, 15, 15, 0.03);
+  margin-top: 20px;
+  border: 2px solid var(--LoginFormOutline);
+  transition: background-color 0.3s ease-out;
+  cursor: pointer;
+}
+
+.login-btn:hover,
+.login-btn:focus {
+  background-color: var(--LoginFormOutline);
+  color: white;
+}
+
+.selected-controller {
+  transition: border 0.5s ease-out;
+  border-bottom: 2px solid var(--LoginFormOutline);
+
+}
+
+.password-state {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+}
+
+.pwd {
+  height: 6px;
+  max-width: 21em;
+  flex: 1;
+  visibility: hidden;
+  position: absolute;
+}
+
+.pwd-weak {
+  background-color: #e74c3c;
+  width: 5%;
+}
+
+.pwd-medium {
+  background-color: #3498db;
+  width: 9%;
+}
+
+.pwd-strong {
+  background-color: #2ecc71;
+  width: 100%;
+}
+
+.show {
+  visibility: visible;
+}
+
+@media screen and (max-width: 430px){
+  .box-controller {
+    margin-top: 100px; 
+    margin-bottom: 10px;
+    width:100px;
+    max-width: 100%;
+    min-width: 100%;
+    max-height: 5%;
+    min-height: 5%;
+  }
+  .box-container {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+  }
+  .box {
+    padding: 10px;
+  }
+
+}
