@@ -149,7 +149,7 @@ class Button extends Component {
         })
         .catch(function(error) {
                 console.log("There has been a problem with your fetch operation: ",error.message);
-                console.log(localStorage.token)
+                console.log(sessionStorage.token)
             });
   }
     render() {

@@ -1,21 +1,24 @@
 import React, { Component } from 'react';
-
-let JWT = null;
+import {login, register} from '../api/cab230-hackhouse'
 
 class Login extends Component {
   constructor(props) {
     super(props);
-    this.state = { isLoginOpen: true, isRegisterOpen: false, isRegisterSucess: false}; 
+    this.state = { isLoginOpen: true, isRegisterOpen: false, isRegisterSucess: false, isLoginSucess: false}; 
   }
   showLoginBox() {
-    this.setState({isLoginOpen: true, isRegisterOpen: false, isRegisterSucess: false})
+    this.setState({isLoginOpen: true, isRegisterOpen: false, isRegisterSucess: false, isLoginSucess: false})
   }
   showRegisterBox() {
-    this.setState({isLoginOpen: false, isRegisterOpen: true, isRegisterSucess: false})
+    this.setState({isLoginOpen: false, isRegisterOpen: true, isRegisterSucess: false, isLoginSucess: false})
   }
   showRegisterSucessBox() {
-    this.setState({isLoginOpen: false, isRegisterOpen: false, isRegisterSucess: true})
+    this.setState({isLoginOpen: false, isRegisterOpen: false, isRegisterSucess: true, isLoginSucess: false})
   }
+  showLoginSucessBox() {
+    this.setState({isLoginOpen: false, isRegisterOpen: false, isRegisterSucess: false, isLoginSucess: true})
+  }
+
   render() {
     return (
       <div className="root-container">
@@ -28,9 +31,10 @@ class Login extends Component {
               </div>
           </div>
           <div className="box-container">
-            {this.state.isLoginOpen &&  <LoginBox />}
-            {this.state.isRegisterOpen &&  <RegisterBox />}
+            {this.state.isLoginOpen &&  <LoginBox triggerParentUpdate={this.showLoginSucessBox.bind(this)} />}
+            {this.state.isRegisterOpen &&  <RegisterBox triggerParentUpdate={this.showRegisterSucessBox.bind(this)}/>}
             {this.state.isRegisterSucess && <RegisterSucessBox/>}
+            {this.state.isLoginSucess && <LoginSucessBox/>}
           </div>
       </div>         
     )
@@ -46,6 +50,7 @@ class LoginBox extends Component {
   showVallidationErr(elm, msg) {
     this.setState((prevState) => ({ errors: [...prevState.errors, {elm, msg}]}))
   }
+  
   clearVallidationErr(elm){
     this.setState((prevState) => {
       let newArr = [];
@@ -57,14 +62,14 @@ class LoginBox extends Component {
       return {errors: newArr};
     })
   }
-  onEmailChange(e) {
-    this.setState( {email: e.target.value})
-    this.clearVallidationErr("email");
+
+  handleChange = (e) => {
+    this.setState({
+        [e.target.name]: e.target.value
+    })
+    this.clearVallidationErr([e.target.id]);
   }
-  onPasswordChange(e) {
-    this.setState( {password: e.target.value})
-    this.clearVallidationErr("password");
-  }
+
   sumbitLogin(e) {
     e.preventDefault();
     if(this.state.email === "") {
@@ -80,30 +85,11 @@ class LoginBox extends Component {
       return
     }
     var result = str.replace("@", "%");
-    fetch("https://cab230.hackhouse.sh/login", {
-    method: "POST",
-    body: result,
-    headers: {
-        "Content-type": "application/x-www-form-urlencoded"
-    }
-})
-    .then(function(response) {
-        if (response.ok) {
-            return response.json();
-        }
-        throw new Error("Network response was not ok.");
-    })
-    .then(function(result) {
-        // let appDiv = document.getElementById("returnLog");
-        // appDiv.innerHTML = JSON.stringify(result);
-        JWT = result.token;
-        console.log(JWT);
-        sessionStorage.setItem('token', JWT)
-    })
-    .catch(function(error) {
-        console.log("There has been a problem with your fetch operation: ",error.message);
-    });
+    login(result)
+    this.props.triggerParentUpdate()
   }
+
+  
   render() {
 
     let emailErr = null, passwordErr = null;
@@ -124,15 +110,14 @@ class LoginBox extends Component {
         <div className="box">
           <div className="input-group">
             <label className="login-label" htmlFor="email">Email</label>
-            <input type="email" name="email" className="login-input" placeholder="Email" onChange={this.onEmailChange.bind(this)}/>
+            <input type="email" name="email" className="login-input" placeholder="Email" onChange={this.handleChange.bind(this)} required/>
             <small className="danger-error">{ emailErr ? emailErr : ''}</small>
           </div>
           <div className="input-group">
             <label className="login-label" htmlFor="password">Password</label>
-            <input type="password" name="password" className="login-input" placeholder="Password" onChange={this.onPasswordChange.bind(this)}/>
+            <input type="password" name="password" className="login-input" placeholder="Password" onChange={this.handleChange.bind(this)} required/>
             <small className="danger-error">{ passwordErr ? passwordErr : ''}</small>
         <button type="button" className="login-btn" onClick={this.sumbitLogin.bind(this)}>Login</button>
-       
           </div>
         </div>
       </div>
@@ -161,20 +146,19 @@ class RegisterBox extends Component {
     })
   }
 
-  onEmailChange(e) {
-    this.setState( {email: e.target.value})
-    this.clearVallidationErr("email");
-  }
-
-  onPasswordChange(e) {
-    this.setState( {password: e.target.value})
-    this.clearVallidationErr("password");
-
-    this.setState({pwdState: "weak"})
-    if(e.target.value.length > 5) {
-      this.setState({pwdState: "medium"})
-    } if (e.target.value.length > 10){
-      this.setState({pwdState: "strong"})
+  handleChange = (e) => {
+    this.setState({
+        [e.target.name]: e.target.value
+    })
+    this.clearVallidationErr([e.target.id]);
+    if(e.target.name === "password") {
+      this.clearVallidationErr("password");
+      this.setState({pwdState: "weak"})
+      if(e.target.value.length > 5) {
+        this.setState({pwdState: "medium"})
+      } if (e.target.value.length > 10){
+        this.setState({pwdState: "strong"})
+      }
     }
   }
 
@@ -195,40 +179,11 @@ class RegisterBox extends Component {
         return
       }
       var result = str.replace("@", "%");
-      fetch("https://cab230.hackhouse.sh/register", {
-        method: "POST",
-        body: result,
-        headers: {
-          "Content-type": "application/x-www-form-urlencoded"
-      }
-    })
-      .then(function(response) {
-        if (response.ok) {
-          return response.json();
-        }
-        throw new Error("Network response was not ok");
-      })
-      .then(function(result) {
-        if (result != null) {
-          console.log(result)
-        }
-        // let appDiv = document.getElementById("test");
-        // appDiv.innerHTML = JSON.stringify(result);
-        // regButton.disabled = true;
-      })
-      .catch(function(error) {
-        console.log("There has been a problem with your fetch operation: ",error.message);
-      });
-      this.setState ({
-        content: ''
-      })
+      register(result)
     }
   }
-
   render() {
-
     let emailErr = null, passwordErr = null;
-    
     for(let err of this.state.errors) {
       if(err.elm === "email") {
         emailErr = err.msg;
@@ -258,12 +213,12 @@ class RegisterBox extends Component {
         <div className="box">
           <div className="input-group">
             <label className="login-label" htmlFor="email">Email</label>
-            <input type="text" name="email" className="login-input" placeholder="Email" onChange={this.onEmailChange.bind(this)}/>
+            <input type="text" name="email" className="login-input" placeholder="Email" onChange={this.handleChange.bind(this)}/>
             <small className="danger-error">{ emailErr ? emailErr : ''}</small>
           </div>
           <div className="input-group">
             <label className="login-label" htmlFor="password">Password</label>
-            <input type="password" name="password" className="login-input" placeholder="Password" onChange={this.onPasswordChange.bind(this)}/>
+            <input type="password" name="password" className="login-input" placeholder="Password" onChange={this.handleChange.bind(this)}/>
             <small className="danger-error">{ passwordErr ? passwordErr : ''}</small>
             {this.state.password && <div className="password-state">
             <div className={"pwd pwd-weak " + (pwdWeak ? "show" : "")}></div>
@@ -280,7 +235,6 @@ class RegisterBox extends Component {
 }
 
 class RegisterSucessBox extends Component {
-
   render() {
     return (
       <div className="inner-container">
@@ -289,7 +243,22 @@ class RegisterSucessBox extends Component {
         </div>
         <div className="box">
           <p>Do Stuff here</p>
-          <button className="login-btn"> Login Now </button>
+          <button className="login-btn">Home</button>
+        </div>
+      </div>
+    )
+  }
+}
+
+class LoginSucessBox extends Component {
+  render() {
+    return (
+      <div className="inner-container">
+        <div className="header">
+          Login Complete
+        </div>
+        <div className="box">
+          <p>Do Stuff here</p>
           <button className="login-btn">Home</button>
         </div>
       </div>
