@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import {login, register} from '../api/cab230-hackhouse'
+import Home from './Home';
 
 class Login extends Component {
   constructor(props) {
@@ -74,7 +75,6 @@ class LoginBox extends Component {
     e.preventDefault();
     if(this.state.email === "") {
       this.showVallidationErr("email", "Email Cannot be Empty!")
-
     } if (this.state.password === "") {
       this.showVallidationErr("password", "Password Cannot be Empty!")
     } 
@@ -88,12 +88,9 @@ class LoginBox extends Component {
     login(result)
     this.props.triggerParentUpdate()
   }
-
   
   render() {
-
     let emailErr = null, passwordErr = null;
-    
     for(let err of this.state.errors) {
       if(err.elm === "email") {
         emailErr = err.msg;
@@ -101,7 +98,6 @@ class LoginBox extends Component {
         passwordErr = err.msg;
       }
     }
-    
     return (
       <div className="inner-container">
         <div className="header">
@@ -117,7 +113,7 @@ class LoginBox extends Component {
             <label className="login-label" htmlFor="password">Password</label>
             <input type="password" name="password" className="login-input" placeholder="Password" onChange={this.handleChange.bind(this)} required/>
             <small className="danger-error">{ passwordErr ? passwordErr : ''}</small>
-        <button type="button" className="login-btn" onClick={this.sumbitLogin.bind(this)}>Login</button>
+          <button type="button" className="login-btn" onClick={this.sumbitLogin.bind(this)}>Login</button>
           </div>
         </div>
       </div>
@@ -180,6 +176,7 @@ class RegisterBox extends Component {
       }
       var result = str.replace("@", "%");
       register(result)
+      this.props.triggerParentUpdate()
     }
   }
   render() {
@@ -204,7 +201,6 @@ class RegisterBox extends Component {
       pwdMedium = false;
       pwdStrong = true;
     }
-    
     return (
       <div className="inner-container">
         <div className="header">
@@ -225,8 +221,7 @@ class RegisterBox extends Component {
             <div className={"pwd pwd-medium " + (pwdMedium ? "show" : "")}></div>
             <div className={"pwd pwd-strong " + (pwdStrong ? "show" : "")}></div>
             </div>}
-        <button type="button" className="login-btn" onClick={this.sumbitRegister.bind(this)}>Register</button>
-       
+            <button type="button" className="login-btn" onClick={this.sumbitRegister.bind(this)}>Register</button>
           </div>
         </div>
       </div>
@@ -243,7 +238,8 @@ class RegisterSucessBox extends Component {
         </div>
         <div className="box">
           <p>Do Stuff here</p>
-          <button className="login-btn">Home</button>
+          <button className="login-btn">Login</button>
+          <button className="Home-btn">Home</button>
         </div>
       </div>
     )
@@ -259,12 +255,11 @@ class LoginSucessBox extends Component {
         </div>
         <div className="box">
           <p>Do Stuff here</p>
-          <button className="login-btn">Home</button>
+          <button className="Home-btn" href={"./"}>Home</button>
         </div>
       </div>
     )
   }
 }
-
 
 export default Login

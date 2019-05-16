@@ -21,6 +21,7 @@ export function register(string) {
         console.log("There has been a problem with your fetch operation: ",error.message);
       });
 }
+
 export function login(string) {
     var JWT;
     fetch("https://cab230.hackhouse.sh/login", {
@@ -45,28 +46,25 @@ export function login(string) {
     });
 }
 
-export function Offences() {
-    fetch("https://cab230.hackhouse.sh/offences")
+export async function Offences() {
+    var temp = await (fetch("https://cab230.hackhouse.sh/offences")
         .then(function(response) {
             if (response.ok) {
-                return response.json();
+                temp = response.json()
+                return(temp)
             }
-            throw new Error("Network response was not ok.");
-        })
-        .then(function(result) {
-            let appDiv = document.getElementById("returnOff");
-            appDiv.innerHTML = JSON.stringify(result);
+            throw new Error(response.error);
         })
         .catch(function(error) {
             console.log("There has been a problem with your fetch operation: ",error.message);
-        });
-}
+        })
+    )
+    return(temp)
+};
 
-export function Search(input) {
+export async function Search(input) {
     //The parameters of the call
-    console.log(sessionStorage.token) 
     var JWT = sessionStorage.token
-
     let getParam = { method: "GET" };
     let head = { Authorization: `Bearer ${JWT}` };
     getParam.headers = head;
@@ -77,21 +75,18 @@ export function Search(input) {
     const query = input;
     const url = baseUrl + query;
 
-    fetch(encodeURI(url),getParam)
+    var temp = await fetch(encodeURI(url),getParam)
         .then(function(response) {
             if (response.ok) {
-                return response.json();
+                var temp = response.json()
+                return temp;
             }
             throw new Error("Network response was not ok.");
         })
-        .then(function(result) {
-            let appDiv = document.getElementById("returnSer");
-            appDiv.innerHTML = JSON.stringify(result);
-        })
         .catch(function(error) {
                 console.log("There has been a problem with your fetch operation: ",error.message);
-                console.log(localStorage.token)
-            });
+        });
+        return temp
 }
 
 export function removeSessionVar() {

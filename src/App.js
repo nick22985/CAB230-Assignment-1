@@ -5,6 +5,7 @@ import Home from './components/Home'
 import Login from './components/Login'
 import Data from './components/Data'
 
+
 class App extends Component {
   constructor(props) {
     super(props);
@@ -13,14 +14,14 @@ class App extends Component {
 
   render() {
     return (
-      <BrowserRouter>
-        <div className="App">
-          <Navbar />
-          <Route exact path='/' component={Home}/>`
-          <Route path='/Login' component={Login} />
-          <Route path='/Data' component={Data} />
-        </div>
-      </BrowserRouter>
+        <BrowserRouter>
+          <div className="App">
+            <Navbar />
+            <Route exact path='/' component={Home}/>
+            <Route path='/Login' component={Login} />
+            <Route path='/Data' component={Data} />
+          </div>
+        </BrowserRouter>
     );
   }
 }
