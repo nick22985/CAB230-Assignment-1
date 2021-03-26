@@ -1,23 +1,31 @@
 import React, { Component } from 'react';
 import {login, register} from '../api/cab230-hackhouse'
-import Home from './Home';
 
 class Login extends Component {
   constructor(props) {
     super(props);
-    this.state = { isLoginOpen: true, isRegisterOpen: false, isRegisterSucess: false, isLoginSucess: false}; 
+    this.state = { isLoginOpen: true, isRegisterOpen: false, isRegisterSucess: false, isLoginSucess: false, loginFailed: false, RegisterFailed: false}; 
   }
+  // set login boxes
   showLoginBox() {
-    this.setState({isLoginOpen: true, isRegisterOpen: false, isRegisterSucess: false, isLoginSucess: false})
+    this.setState({isLoginOpen: true, isRegisterOpen: false, isRegisterSucess: false, isLoginSucess: false, loginFailed: false, RegisterFailed: false})
   }
   showRegisterBox() {
-    this.setState({isLoginOpen: false, isRegisterOpen: true, isRegisterSucess: false, isLoginSucess: false})
+    this.setState({isLoginOpen: false, isRegisterOpen: true, isRegisterSucess: false, isLoginSucess: false, loginFailed: false, RegisterFailed: false})
   }
   showRegisterSucessBox() {
-    this.setState({isLoginOpen: false, isRegisterOpen: false, isRegisterSucess: true, isLoginSucess: false})
+    this.setState({isLoginOpen: false, isRegisterOpen: false, isRegisterSucess: true, isLoginSucess: false, loginFailed: false, RegisterFailed: false})
   }
   showLoginSucessBox() {
-    this.setState({isLoginOpen: false, isRegisterOpen: false, isRegisterSucess: false, isLoginSucess: true})
+    this.setState({isLoginOpen: false, isRegisterOpen: false, isRegisterSucess: false, isLoginSucess: true, loginFailed: false, RegisterFailed: false})
+  }
+
+  showLoginFailedBox() {
+    this.setState({isLoginOpen: false, isRegisterOpen: false, isRegisterSucess: false, isLoginSucess: false, loginFailed: true, RegisterFailed: false})
+  }
+
+  showRegisterFailedBox() {
+    this.setState({isLoginOpen: false, isRegisterOpen: false, isRegisterSucess: false, isLoginSucess: false, loginFailed: false, RegisterFailed: true})
   }
 
   render() {
@@ -32,10 +40,12 @@ class Login extends Component {
               </div>
           </div>
           <div className="box-container">
-            {this.state.isLoginOpen &&  <LoginBox triggerParentUpdate={this.showLoginSucessBox.bind(this)} />}
-            {this.state.isRegisterOpen &&  <RegisterBox triggerParentUpdate={this.showRegisterSucessBox.bind(this)}/>}
-            {this.state.isRegisterSucess && <RegisterSucessBox/>}
+            {this.state.isLoginOpen && <LoginBox triggerParentUpdate={this.showLoginSucessBox.bind(this)} triggerParentUpdateFailed={this.showLoginFailedBox.bind(this)} />}
+            {this.state.isRegisterOpen && <RegisterBox triggerParentUpdate={this.showRegisterSucessBox.bind(this)} triggerParentUpdateFailed={this.showRegisterFailedBox.bind(this)}/>}
+            {this.state.isRegisterSucess && <RegisterSucessBox triggerLoginButton={this.showLoginBox}/>}
             {this.state.isLoginSucess && <LoginSucessBox/>}
+            {this.state.loginFailed && <LoginFailedBox/>}
+            {this.state.RegisterFailed && <RegisterFailedBox/>}
           </div>
       </div>         
     )
@@ -47,11 +57,11 @@ class LoginBox extends Component {
     super(props);
     this.state = {email: "", password: "", errors: [], pwdState: null};
   }
-
+  //show errors 
   showVallidationErr(elm, msg) {
     this.setState((prevState) => ({ errors: [...prevState.errors, {elm, msg}]}))
   }
-  
+  //clears errors
   clearVallidationErr(elm){
     this.setState((prevState) => {
       let newArr = [];
@@ -63,15 +73,24 @@ class LoginBox extends Component {
       return {errors: newArr};
     })
   }
-
+//handles data change and assigns it
   handleChange = (e) => {
     this.setState({
         [e.target.name]: e.target.value
     })
     this.clearVallidationErr([e.target.id]);
   }
-
-  sumbitLogin(e) {
+//test if login worked
+  didLoginWork = async (e) => {
+    if (sessionStorage.token) {
+      this.props.triggerParentUpdate()
+    }
+    else {
+      this.props.triggerParentUpdateFailed()
+    }
+  }
+// submits onlogin to then send data to api
+  sumbitLogin = async (e) => {
     e.preventDefault();
     if(this.state.email === "") {
       this.showVallidationErr("email", "Email Cannot be Empty!")
@@ -85,8 +104,9 @@ class LoginBox extends Component {
       return
     }
     var result = str.replace("@", "%");
-    login(result)
-    this.props.triggerParentUpdate()
+    await login(result)
+    this.didLoginWork()
+    
   }
   
   render() {
@@ -158,8 +178,19 @@ class RegisterBox extends Component {
     }
   }
 
-  sumbitRegister(e) {
-    e.preventDefault();
+
+  didRegisterWork = async (temp, e) => {
+    console.log("---------")
+    console.log(temp)
+    if (temp === "failed") {
+      this.props.triggerParentUpdate()
+    }
+    else { 
+      this.props.triggerParentUpdateFailed()
+    }
+  }
+
+  sumbitRegister = async (e) => {
     if(this.state.email === "") {
       this.showVallidationErr("email", "Email Cannot be Empty!")
 
@@ -171,12 +202,12 @@ class RegisterBox extends Component {
       var isemailvalid = str.match("@");
       if (isemailvalid == null) {
         this.showVallidationErr("email", "Please Enter a Valid Eamil!")      
-        console.log(str)  
         return
       }
       var result = str.replace("@", "%");
-      register(result)
+      await register(result)
       this.props.triggerParentUpdate()
+      
     }
   }
   render() {
@@ -221,7 +252,7 @@ class RegisterBox extends Component {
             <div className={"pwd pwd-medium " + (pwdMedium ? "show" : "")}></div>
             <div className={"pwd pwd-strong " + (pwdStrong ? "show" : "")}></div>
             </div>}
-            <button type="button" className="login-btn" onClick={this.sumbitRegister.bind(this)}>Register</button>
+            <button type="button" className="login-btn" onClick={this.sumbitRegister}>Register</button>
           </div>
         </div>
       </div>
@@ -237,9 +268,7 @@ class RegisterSucessBox extends Component {
           Registration Complete
         </div>
         <div className="box">
-          <p>Do Stuff here</p>
-          <button className="login-btn">Login</button>
-          <button className="Home-btn">Home</button>
+          <p> You Have Succesfully Registerd</p>
         </div>
       </div>
     )
@@ -254,8 +283,37 @@ class LoginSucessBox extends Component {
           Login Complete
         </div>
         <div className="box">
-          <p>Do Stuff here</p>
-          <button className="Home-btn" href={"./"}>Home</button>
+          <p>You Have Sucessfully Logged in</p>
+        </div>
+      </div>
+    )
+  }
+}
+
+class LoginFailedBox extends Component {
+  render() {
+    return (
+      <div className="inner-container">
+        <div className="header">
+          Login Failed
+        </div>
+        <div className="box">
+          <p>Your username or password was inccorect</p>
+        </div>
+      </div>
+    )
+  }
+}
+
+class RegisterFailedBox extends Component {
+  render() {
+    return (
+      <div className="inner-container">
+        <div className="header">
+          Registration Failed
+        </div>
+        <div className="box">
+          <p>The User that you have entered already exist in our system please try again</p>
         </div>
       </div>
     )

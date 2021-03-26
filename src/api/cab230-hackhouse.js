@@ -1,4 +1,8 @@
+// functions do as they say and sends to api for result
+
 export function register(string) {
+    var temp2;
+    
     fetch("https://cab230.hackhouse.sh/register", {
         method: "POST",
         body: string,
@@ -12,14 +16,11 @@ export function register(string) {
         }
         throw new Error("Network response was not ok");
       })
-      .then(function(result) {
-        if (result != null) {
-          console.log(result)
-        }
-      })
       .catch(function(error) {
         console.log("There has been a problem with your fetch operation: ",error.message);
       });
+      return temp2
+      
 }
 
 export function login(string) {
@@ -62,6 +63,70 @@ export async function Offences() {
     return(temp)
 };
 
+export async function Areas() {
+    var temp = await (fetch("https://cab230.hackhouse.sh/areas")
+        .then(function(response) {
+            if (response.ok) {
+                temp = response.json()
+                return(temp)
+            }
+            throw new Error(response.error);
+        })
+        .catch(function(error) {
+            console.log("There has been a problem with your fetch operation: ",error.message);
+        })
+    )
+    return(temp)
+};
+
+export async function Ages() {
+    var temp = await (fetch("https://cab230.hackhouse.sh/ages")
+        .then(function(response) {
+            if (response.ok) {
+                temp = response.json()
+                return(temp)
+            }
+            throw new Error(response.error);
+        })
+        .catch(function(error) {
+            console.log("There has been a problem with your fetch operation: ",error.message);
+        })
+    )
+    return(temp)
+};
+
+export async function Genders() {
+    var temp = await (fetch("https://cab230.hackhouse.sh/genders")
+        .then(function(response) {
+            if (response.ok) {
+                temp = response.json()
+                return(temp)
+            }
+            throw new Error(response.error);
+        })
+        .catch(function(error) {
+            console.log("There has been a problem with your fetch operation: ",error.message);
+        })
+    )
+    return(temp)
+};
+
+export async function Years() {
+    var temp = await (fetch("https://cab230.hackhouse.sh/years")
+        .then(function(response) {
+            if (response.ok) {
+                temp = response.json()
+                return(temp)
+            }
+            throw new Error(response.error);
+        })
+        .catch(function(error) {
+            console.log("There has been a problem with your fetch operation: ",error.message);
+        })
+    )
+    return(temp)
+};
+
 export async function Search(input) {
     //The parameters of the call
     var JWT = sessionStorage.token
@@ -74,6 +139,7 @@ export async function Search(input) {
     // const query = 'offence=Weapons Act Offences - Other';
     const query = input;
     const url = baseUrl + query;
+
 
     var temp = await fetch(encodeURI(url),getParam)
         .then(function(response) {
